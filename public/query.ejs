@@ -1,3 +1,67 @@
 <div>
-    <h1>Query</h1>
+    <form id="queryForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" autocomplete="off"><br><br>
+        <button type="submit" value="Submit" class="btn btn-primary">Query</button>
+    </form>
 </div>
+<div id="resultTable" class="table-responsive">
+    <!-- Table will be populated here -->
+</div>
+
+<script>
+document.getElementById('queryForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+
+    const id = document.getElementById('id').value;
+
+    fetch(`/queryItem?id=${id}`)
+        .then(response => response.json())
+        .then(item => {
+            let tableHTML = '';
+            if (item && item.row) {
+                tableHTML = `
+                    <table class="table table-striped table-hover">
+                        <tr>
+                            <td>Product Code:</td>
+                            <td>${item.row.id}</td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td>${item.row.description}</td>
+                        </tr>
+                        <tr>
+                            <td>Quantity:</td>
+                            <td>${item.row.quantity}</td>
+                        </tr>
+                        <tr>
+                            <td>Min Value:</td>
+                            <td>${item.row.min}</td>
+                        </tr>
+                        <tr>
+                            <td>Max Value:</td>
+                            <td>${item.row.max}</td>
+                        </tr>
+                        <tr>
+                            <td>Cost:</td>
+                            <td>${item.row.cost}</td>
+                        </tr>
+                        <tr>
+                            <td>RRP:</td>
+                            <td>${item.row.rrp}</td>
+                        </tr>
+                        <tr>
+                            <td>Wholesale:</td>
+                            <td>${item.row.wholesale}</td>
+                        </tr>
+                    </table>
+                `;
+            } else {
+                tableHTML = '<p>No item found</p>';
+            }
+
+            document.getElementById('resultTable').innerHTML = tableHTML;
+        })
+        .catch(error => console.error('Error:', error));
+});
+</script>

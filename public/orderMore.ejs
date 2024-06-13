@@ -1,0 +1,81 @@
+<h1>Items to Order</h1>
+<div class="table-responsive">
+<table class="table table-striped table-hover">
+	<thead>
+		<tr>
+			<th>Product Code</th>
+			<th>Description</th>
+			<th>Quantity</th>
+			<th>Min Value</th>
+			<th>Order</th>
+			<!-- Add more headers as needed -->
+		</tr>
+	</thead>
+	<tbody>
+		<% items.forEach(item => { %>
+			<tr>
+				<td><%= item.id %></td>
+				<td><%= item.description %></td>
+				<td><%= item.quantity %></td>
+				<td><%= item.min %></td>
+				<td><input type="checkbox" class="order-checkbox" data-id="<%= item.id %>" data-quantity="<%= item.quantity %>" data-min="<%= item.min %>" autocomplete="off"></td>
+				<!-- Add more cells as needed -->
+			</tr>
+		<% }); %>
+	</tbody>
+</table>
+</div>
+
+<button id="order-button" class="btn btn-primary">Order Selected Items</button>
+
+<script>
+    $(document).ready(function() {
+        $('#order-button').click(function() {
+            const requests = [];
+            $('.order-checkbox:checked').each(function() {
+                const itemId = $(this).data('id');
+                const needsOrdering = 0;
+                const request = $.post('/order', { id: itemId, needsOrdering: needsOrdering }, function(data) {
+                    console.log(data);
+                });
+                requests.push(request);
+            });
+
+            Promise.all(requests)
+                .then(() => {
+                    alert('Order placed successfully');
+                    location.reload();
+                })
+                .catch(() => {
+                    alert('Failed to place order');
+                });
+        });
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#order-button').click(function() {
+            const items = [];
+            $('.order-checkbox:checked').each(function() {
+                const itemId = $(this).data('id');
+                const quantity = $(this).data('quantity');
+                const min = $(this).data('min');
+                items.push({ id: itemId, quantity: quantity, min: min });
+            });
+
+            const csv = Papa.unparse(items);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+			let date = new Date();
+            link.download = `Savitech order ${date.toDateString()}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
