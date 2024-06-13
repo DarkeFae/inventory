@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partial/head.ejs'); %>
+</head>
+<body class="container">
+
+<header>
+    <div class="navbar">
+        <% for(let page of navlinks) { %>
+            <a href="/<%= page %>"><%= page %></a>
+        <% } %>
+    </div>
+</header>
+
+<main>
+    <% try { %>
+        <%- include(page); %>
+    <% } catch (e) { %>
+        <p>Page not found</p>
+    <% } %>
+</main>
+
+<footer>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<style>
+    .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1em;
+    }
+    .form-group label {
+        margin-right: 0.5em;
+        width: 20ch;
+    }
+
+</style>
+
+<form action="/addNewItem" method="POST">
+    <div class="form-group">
+    <label for="id">Product Code:</label>
+    <input type="text" id="id" name="id"><br>
+    </div>
+    <div class="form-group">
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description"><br>
+</div>
+<div class="form-group">
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" name="quantity" value="0" onclick="this.select()"><br>
+</div>
+<div class="form-group">
+    <label for="min">Min Value:</label>
+    <input type="number" id="min" name="min" value="20" onclick="this.select()"><br>
+</div>
+<div class="form-group">
+    <label for="max">Max Value:</label>
+    <input type="number" id="max" name="max" value="100" onclick="this.select()"><br>
+</div>
+<div class="form-group">
+    <label for="cost">Cost Price:</label>
+    <input type="number" id="cost" name="cost" value="0.00" onclick="this.select()" step="any"><br>
+</div>
+<div class="form-group">
+    <label for="rrp">RRP:</label>
+    <input type="number" id="rrp" name="rrp" value="0.00" onclick="this.select()" step="any"><br>
+</div>
+<div class="form-group">
+    <label for="wholesale">Wholesale Price:</label>
+    <input type="number" id="wholesale" name="wholesale" value="0.00" onclick="this.select()" step="any"><br>
+</div>
+    <button type="submit" class="btn btn-primary">Add Product</button>
+</form>

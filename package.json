@@ -1,0 +1,19 @@
+{
+  "name": "stock",
+  "version": "1.0.0",
+  "description": "dumb inventory management and checking.",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "node --watch .",
+    "start": "node ."
+  },
+  "keywords": [],
+  "author": "DarkeFae",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}
