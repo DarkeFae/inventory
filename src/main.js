@@ -22,14 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 const pages = ['addNew', 'query', 'modify', 'increase', 'decrease', 'orderMore'];
 
 app.get('/', (req, res) => {
-    res.render('layouts/layout.ejs', { page: "../home", navlinks: pages });
+    res.render('layouts/layout.ejs', { page: "../home", navlinks: pages, currentUrl: req.url });
 });
 
 /* Add routes for user to interact with. */
 pages.forEach(page => {
     if (page !== 'query' && page !== 'orderMore') {
         app.get(`/${page}`, (req, res) => {
-            res.render('layouts/layout', { page: `../${page}`, navlinks: pages });
+            res.render('layouts/layout', { page: `../${page}`, navlinks: pages, currentUrl: req.url, });
         });
     }
 });
@@ -42,13 +42,13 @@ app.post('/addNewItem', (req, res) => {
 });
 
 app.get('/query', (req, res) => {
-    res.render('layouts/layout', { page: `../query`, navlinks: pages });
+    res.render('layouts/layout', { page: `../query`, navlinks: pages, currentUrl: req.url });
 });
 
 app.get('/orderMore', async (req, res) => {
     try {
         const items = await orderMore();
-        res.render('layouts/layout', { page: `../orderMore`, navlinks: pages, items });
+        res.render('layouts/layout', { page: `../orderMore`, navlinks: pages, items, currentUrl: req.url });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred while querying items.' });
@@ -77,9 +77,28 @@ app.post('/order', (req, res) => {
   });
 
 app.post('/decreaseItems', async (req, res) => {
-    const items = req.body;
-    console.log(items);
+    const items = req.body.items;
+    items.forEach(async item => {
+        await decreaseItem(item.id.toLocaleUpperCase(), item.quantity);
+    });
+    
     res.status(200).type('json').json({ success: true });
+});
+
+app.post('/increaseItems', async (req, res) => {
+    const items = req.body.items;
+    items.forEach(async item => {
+        await increaseItem(item.id.toLocaleUpperCase(), item.quantity);
+    });
+    
+    res.status(200).type('json').json({ success: true });
+});
+
+app.post('/modifyItem', async (req, res) => {
+    const { id, description, quantity, min, max, cost, rrp, wholesale } = req.body;
+    console.log(id, description, quantity, min, max, cost, rrp, wholesale);
+    modifyItem(id.toLocaleUpperCase(), description, quantity, min, max, cost, rrp, wholesale);
+    res.redirect('/modify');
 });
 
 app.listen(3000, () => {

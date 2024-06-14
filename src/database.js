@@ -12,20 +12,122 @@ function addItem(id, description, quantity, min, max, cost, rrp, wholesale) {
 
   const sql = `INSERT INTO stock (id, description, quantity, min, max, cost, rrp, wholesale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  db.run(sql, [id, description, quantity, min, max, cost, rrp, wholesale], (err) => {
+  db.run(
+    sql,
+    [id, description, quantity, min, max, cost, rrp, wholesale],
+    (err) => {
+      if (err) {
+        console.error("Database insertion error: ", err);
+        return;
+      }
+      console.log("Row inserted.");
+    }
+  );
+}
+
+function increaseItem(id, increaseAmount) {
+  let db = new sqlite3.Database("db/inventory.db", (err) => {
     if (err) {
-      console.error('Database insertion error: ', err);
+      console.error("Database opening error: ", err);
       return;
     }
-    console.log('Row inserted.');
+    console.log("Connected to the database.");
+
+    const selectSql = `SELECT quantity, min FROM stock WHERE id = ?`;
+    db.get(selectSql, [id], (err, row) => {
+      if (err) {
+        console.error("Database selection error: ", err);
+        return;
+      }
+      //console.log(JSON.stringify(row))
+      const newQuantity = Number(row.quantity) + Number(increaseAmount);
+      console.log("New quantity: ", newQuantity);
+      if (newQuantity >= row.min) {
+        const updateSql = `UPDATE stock SET quantity = ?, needsOrdering = 0 WHERE id = ?`;
+        db.run(updateSql, [newQuantity, id], (err) => {
+          if (err) {
+            console.error("Database update error: ", err);
+            return;
+          }
+          console.log("Row updated.");
+        });
+      } else {
+        const updateSql = `UPDATE stock SET quantity = ? WHERE id = ?`;
+        db.run(updateSql, [newQuantity, id], (err) => {
+          if (err) {
+            console.error("Database update error: ", err);
+            return;
+          }
+          console.log("Row updated.");
+        });
+      }
+    });
   });
 }
 
-function increaseItem() { }
+function decreaseItem(id, decreaseAmount) {
+  let db = new sqlite3.Database("db/inventory.db", (err) => {
+    if (err) {
+      console.error("Database opening error: ", err);
+      return;
+    }
+    console.log("Connected to the database.");
 
-function decreaseItem() { }
+    const selectSql = `SELECT quantity, min FROM stock WHERE id = ?`;
+    db.get(selectSql, [id], (err, row) => {
+      if (err) {
+        console.error("Database selection error: ", err);
+        return;
+      }
+      //console.log(JSON.stringify(row))
+      const newQuantity = Number(row.quantity) - Number(decreaseAmount);
+      console.log("New quantity: ", newQuantity);
+      if (newQuantity <= row.min) {
+        const updateSql = `UPDATE stock SET quantity = ?, needsOrdering = 1 WHERE id = ?`;
+        db.run(updateSql, [newQuantity, id], (err) => {
+          if (err) {
+            console.error("Database update error: ", err);
+            return;
+          }
+          console.log("Row updated.");
+        });
+      } else {
+        const updateSql = `UPDATE stock SET quantity = ? WHERE id = ?`;
+        db.run(updateSql, [newQuantity, id], (err) => {
+          if (err) {
+            console.error("Database update error: ", err);
+            return;
+          }
+          console.log("Row updated.");
+        });
+      }
+    });
+  });
+}
 
-function modifyItem() { }
+function modifyItem(id, description, quantity, min, max, cost, rrp, wholesale) {
+  let db = new sqlite3.Database("db/inventory.db", (err) => {
+    if (err) {
+      console.error("Database opening error: ", err);
+      return;
+    }
+    console.log("Connected to the database.");
+  });
+
+  const sql = `UPDATE stock SET description = ?, quantity = ?, min = ?, max = ?, cost = ?, rrp = ?, wholesale = ? WHERE id = ?`;
+
+  db.run(
+    sql,
+    [description, quantity, min, max, cost, rrp, wholesale, id],
+    (err) => {
+      if (err) {
+        console.error("Database update error: ", err);
+        return;
+      }
+      console.log("Row updated.");
+    }
+  );
+}
 
 function orderMore() {
   let db = new sqlite3.Database("db/inventory.db", (err) => {
@@ -50,7 +152,7 @@ function orderMore() {
       } else {
         resolve([]);
       }
-      });
+    });
     db.close();
   });
 }
@@ -91,7 +193,7 @@ async function queryItem(id) {
   });
 
   const sql = `SELECT * FROM stock WHERE id = ?`;
-  let item = {}
+  let item = {};
 
   return new Promise((resolve, reject) => {
     db.get(sql, [id], (err, row) => {
@@ -107,7 +209,7 @@ async function queryItem(id) {
         console.log("Row not found.");
       }
 
-      console.log(item);
+      //console.log(item);
       resolve(item);
       db.close();
     });
@@ -115,7 +217,6 @@ async function queryItem(id) {
 }
 
 function initTable() {
-
   const tableName = "stock"; // replace with your table name
 
   db = new sqlite3.Database("db/inventory.db", (err) => {
@@ -144,7 +245,6 @@ function initTable() {
               console.error("Table creation error: ", err);
             }
             console.log("Table created.");
-
           }
         );
       }

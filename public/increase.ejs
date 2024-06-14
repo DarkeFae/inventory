@@ -1,0 +1,73 @@
+<style>
+	.form-group {
+		display: flex;
+		max-width: 80%;
+		margin: 0 auto;
+		justify-content: space-between;
+	}
+</style>
+<h1>Stock Increase</h1>
+<div id="dynamic-form">
+    <div class="form-group">
+        <input type="text" class="form-control id-input" placeholder="Enter Product Code" autocomplete="off" required>&nbsp;
+        <input type="number" class="form-control quantity-input" placeholder="Enter quantity" autocomplete="off" required>
+    </div>
+</div>
+<br>
+<div>
+<button id="increase-button" class="btn btn-primary">Increase Stock</button>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#increase-button').click(function() {
+            const items = [];
+            const formGroups = $('.form-group').toArray();
+
+            for (let i = 0; i < formGroups.length; i++) {
+                const formGroup = $(formGroups[i]);
+                const itemId = formGroup.find('.id-input').val();
+                const quantity = formGroup.find('.quantity-input').val();
+
+                // Ignore the last form group if it's empty
+                if (i === formGroups.length - 1 && itemId === '' && quantity === '') {
+                    continue;
+                }
+
+                items.push({ id: itemId, quantity: quantity });
+            }
+
+            $.post('/increaseItems', { items: items }, function(data) {
+                if (data.success) {
+                    alert('Stock increased successfully');
+                    location.reload();
+                } else {
+                    alert('Failed to increase stock');
+                }
+            });
+        });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#dynamic-form').on('input', '.form-control', function() {
+            const lastFormGroup = $('.form-group').last();
+            const idFilled = lastFormGroup.find('.id-input').val() !== '';
+            const quantityFilled = lastFormGroup.find('.quantity-input').val() !== '';
+
+            if (idFilled && quantityFilled) {
+                $('#dynamic-form').append('<div class="form-group"><input type="text" class="form-control id-input" placeholder="Enter Product Code" autocomplete="off" required>&nbsp;<input type="number" class="form-control quantity-input" placeholder="Enter quantity" autocomplete="off" required></div>');
+            } else if ($('.form-group').length > 1) {
+                const thisFormGroup = $(this).parent('.form-group');
+                const thisIdEmpty = thisFormGroup.find('.id-input').val() === '';
+                const thisQuantityEmpty = thisFormGroup.find('.quantity-input').val() === '';
+
+                if (thisIdEmpty && thisQuantityEmpty) {
+                    thisFormGroup.remove();
+                }
+            }
+        });
+    });
+</script>
