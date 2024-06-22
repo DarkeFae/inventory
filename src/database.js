@@ -1,7 +1,7 @@
 const res = require("express/lib/response");
 const sqlite3 = require("sqlite3");
 
-function addItem(id, description, quantity, min, max, cost, rrp, wholesale) {
+function addItem(id, description, quantity, min, max, cost, rrp, wholesale, supplier, supplierid, specs = null) {
   let db = new sqlite3.Database("db/inventory.db", (err) => {
     if (err) {
       console.error("Database opening error: ", err);
@@ -10,11 +10,11 @@ function addItem(id, description, quantity, min, max, cost, rrp, wholesale) {
     console.log("Connected to the database.");
   });
 
-  const sql = `INSERT INTO stock (id, description, quantity, min, max, cost, rrp, wholesale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO stock (id, description, supplier, supplierid, specs, quantity, min, max, cost, rrp, wholesale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   db.run(
     sql,
-    [id, description, quantity, min, max, cost, rrp, wholesale],
+    [id, description, supplier, supplierid, specs, quantity, min, max, cost, rrp, wholesale],
     (err) => {
       if (err) {
         console.error("Database insertion error: ", err);
@@ -105,7 +105,7 @@ function decreaseItem(id, decreaseAmount) {
   });
 }
 
-function modifyItem(id, description, quantity, min, max, cost, rrp, wholesale) {
+function modifyItem(id, description, quantity, supplier, supplierid, min, max, cost, rrp, wholesale, specs = null) {
   let db = new sqlite3.Database("db/inventory.db", (err) => {
     if (err) {
       console.error("Database opening error: ", err);
@@ -114,11 +114,11 @@ function modifyItem(id, description, quantity, min, max, cost, rrp, wholesale) {
     console.log("Connected to the database.");
   });
 
-  const sql = `UPDATE stock SET description = ?, quantity = ?, min = ?, max = ?, cost = ?, rrp = ?, wholesale = ? WHERE id = ?`;
+  const sql = `UPDATE stock SET description = ?, quantity = ?, supplier = ?, supplierid = ?, specs = ? min = ?, max = ?, cost = ?, rrp = ?, wholesale = ? WHERE id = ?`;
 
   db.run(
     sql,
-    [description, quantity, min, max, cost, rrp, wholesale, id],
+    [description, quantity, supplier, supplierid, specs, min, max, cost, rrp, wholesale, id],
     (err) => {
       if (err) {
         console.error("Database update error: ", err);
@@ -183,7 +183,7 @@ function order(id, needsOrdering) {
   });
 }
 
-async function queryItem(id) {
+async function queryItem(id, price = null) {
   let db = new sqlite3.Database("db/inventory.db", (err) => {
     if (err) {
       console.error("Database opening error: ", err);
@@ -210,7 +210,21 @@ async function queryItem(id) {
       }
 
       //console.log(item);
-      resolve(item);
+      try {
+      switch (price) {
+        case "retail": resolve(item.row.rrp);
+          break;
+        case "wholesale": resolve(item.row.wholesale);
+          break;
+        case "description": resolve(item.row.description);
+          break;
+        case "cost": resolve(item.row.cost);
+          break;
+        default: resolve(item);
+      }
+    } catch (err) {
+      reject(err);
+    }
       db.close();
     });
   });
@@ -239,7 +253,7 @@ function initTable() {
         console.log(`Table ${tableName} exists.`);
       } else {
         db.run(
-          "CREATE TABLE IF NOT EXISTS stock (id TEXT UNIQUE PRIMARY KEY, description TEXT, quantity INTEGER, min INTEGER, max INTEGER, cost REAL, rrp REAL, wholesale REAL)",
+          "CREATE TABLE IF NOT EXISTS stock (id TEXT UNIQUE PRIMARY KEY, description TEXT, supplier TEXT, supplierid TEXT, specs TEXT, quantity INTEGER, min INTEGER, max INTEGER, cost REAL, rrp REAL, wholesale REAL)",
           (err) => {
             if (err) {
               console.error("Table creation error: ", err);
