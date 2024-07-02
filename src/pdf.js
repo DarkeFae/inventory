@@ -53,12 +53,16 @@ async function createPDF(items, type) {
     
     docDefinition.content[0].table.body[0].push("Cost")
     items.forEach((item) => {
+      if(!item.error) {
       docDefinition.content[0].table.body.push([
         item.id,
         item.description,
         item.retail,
         item.cost,
       ]);
+    } else {
+      console.log(`Item not Found: ${item.id}`)
+    }
     });
     //console.log(docDefinition);
   }

@@ -56,22 +56,45 @@
 
         // Send a request to the server to generate the PDF
         fetch('/generatePdf', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ products, type })
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            // Create a link and click it to download the PDF
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            let date = new Date();
-            let currentdate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-            link.download = `Savitech ${currentdate}.pdf`;
-            link.click();
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ products, type })
+})
+.then(response => {
+    if (response.ok && response.headers.get("Content-Type").includes("application/pdf")) {
+        return response.blob(); // If the response is a PDF, return as blob
+    } else if (response.headers.get("Content-Type").includes("application/json")) {
+        return response.json().then(data => {
+            if (data.error) {
+                throw new Error(data.error); // If JSON contains an error, throw it
+            }
+            return data; // Handle other JSON responses appropriately
         });
+    } else {
+        throw new Error('Unexpected response type');
+    }
+})
+.then(data => {
+    if (data instanceof Blob) {
+        // Handle the PDF blob
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(data);
+        let date = new Date();
+        let currentdate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`; // Corrected month index
+        link.download = `Savitech ${currentdate}.pdf`;
+        link.click();
+    } else {
+        // Handle other data types (if any)
+        console.log('Received non-blob data:', data);
+    }
+})
+.catch(error => {
+    // Handle any errors that occurred during fetch
+    console.error('Error:', error);
+    alert('An error occurred while generating the PDF.');
+});
         products = [];
     }
 </script>

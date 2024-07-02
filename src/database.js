@@ -114,7 +114,7 @@ function modifyItem(id, description, quantity, supplier, supplierid, min, max, c
     console.log("Connected to the database.");
   });
 
-  const sql = `UPDATE stock SET description = ?, quantity = ?, supplier = ?, supplierid = ?, specs = ? min = ?, max = ?, cost = ?, rrp = ?, wholesale = ? WHERE id = ?`;
+  const sql = `UPDATE stock SET description = ?, quantity = ?, supplier = ?, supplierid = ?, specs = ?, min = ?, max = ?, cost = ?, rrp = ?, wholesale = ? WHERE id = ?`;
 
   db.run(
     sql,

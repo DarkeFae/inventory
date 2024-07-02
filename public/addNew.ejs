@@ -11,117 +11,145 @@
 </style>
 
 <form action="/addNewItem" method="POST">
-  <div class="form-group">
-    <label for="id">Product Code:</label>
-    <input type="text" id="id" name="id" autocomplete="off" /><br />
-  </div>
-  <div class="form-group">
-    <label for="description">Description:</label>
-    <input
-      type="text"
-      id="description"
-      name="description"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="supplier">Supplier:</label>
-    <input
-      type="text"
-      id="supplier"
-      name="supplier"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="supplierid">Supplier Product Code:</label>
-    <input
-      type="text"
-      id="supplierid"
-      name="supplierid"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="quantity">Specifactions:</label>
-    <input
-      type="specs"
-      id="specs"
-      name="specs"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="quantity">Quantity:</label>
-    <input
-      type="number"
-      id="quantity"
-      name="quantity"
-      value="0"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="min">Min Value:</label>
-    <input
-      type="number"
-      id="min"
-      name="min"
-      value="20"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="max">Max Value:</label>
-    <input
-      type="number"
-      id="max"
-      name="max"
-      value="100"
-      onclick="this.select()"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="cost">Cost Price:</label>
-    <input
-      type="number"
-      id="cost"
-      name="cost"
-      value="0.00"
-      onclick="this.select()"
-      step="any"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="rrp">RRP:</label>
-    <input
-      type="number"
-      id="rrp"
-      name="rrp"
-      value="0.00"
-      onclick="this.select()"
-      step="any"
-      autocomplete="off"
-    /><br />
-  </div>
-  <div class="form-group">
-    <label for="wholesale">Wholesale Price:</label>
-    <input
-      type="number"
-      id="wholesale"
-      name="wholesale"
-      value="0.00"
-      onclick="this.select()"
-      step="any"
-      autocomplete="off"
-    /><br />
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="id">Product Code:</label>
+          <input
+            type="text"
+            id="id"
+            name="id"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+
+        <div class="form-group">
+          <label for="supplier">Supplier:</label>
+          <input
+            type="text"
+            id="supplier"
+            name="supplier"
+            onclick="this.select()"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="supplierid">Supplier Product Code:</label>
+          <input
+            type="text"
+            id="supplierid"
+            name="supplierid"
+            onclick="this.select()"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value="0"
+            onclick="this.select()"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="min">Min Value:</label>
+          <input
+            type="number"
+            id="min"
+            name="min"
+            value="20"
+            onclick="this.select()"
+            autocomplete="off"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="max">Max Value:</label>
+          <input
+            type="number"
+            id="max"
+            name="max"
+            value="100"
+            onclick="this.select()"
+            autocomplete="off"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="cost">Cost Price:</label>
+          <input
+            type="number"
+            id="cost"
+            name="cost"
+            value="0.00"
+            onclick="this.select()"
+            step="any"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="rrp">RRP:</label>
+          <input
+            type="number"
+            id="rrp"
+            name="rrp"
+            value="0.00"
+            onclick="this.select()"
+            step="any"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+        <div class="form-group">
+          <label for="wholesale">Wholesale Price:</label>
+          <input
+            type="number"
+            id="wholesale"
+            name="wholesale"
+            value="0.00"
+            onclick="this.select()"
+            step="any"
+            autocomplete="off"
+            required="true"
+          /><br />
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea
+            type="text"
+            id="description"
+            name="description"
+            rows="8"
+            cols="50"
+            autocomplete="off"
+            required="true"
+          ></textarea
+          ><br />
+        </div>
+        <div class="form-group">
+          <label for="quantity">Specifactions:</label>
+          <textarea
+            type="specs"
+            id="specs"
+            name="specs"
+            onclick="this.select()"
+            rows="8"
+            cols="50"
+            autocomplete="off"
+          ></textarea
+          ><br />
+        </div>
+      </div>
+    </div>
   </div>
   <button type="submit" class="btn btn-primary">Add Product</button>
 </form>

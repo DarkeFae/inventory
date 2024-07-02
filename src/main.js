@@ -146,18 +146,32 @@ app.post("/increaseItems", async (req, res) => {
 });
 
 app.post("/modifyItem", async (req, res) => {
-  const { id, description, quantity, min, max, cost, rrp, wholesale } =
-    req.body;
+  const {
+    id,
+    description,
+    quantity,
+    supplier,
+    supplierid,
+    min,
+    max,
+    cost,
+    rrp,
+    wholesale,
+    specs,
+  } = req.body;
   console.log(id, description, quantity, min, max, cost, rrp, wholesale);
   modifyItem(
     id.toLocaleUpperCase(),
     description,
     quantity,
+    supplier,
+    supplierid,
     min,
     max,
     cost,
     rrp,
-    wholesale
+    wholesale,
+    specs
   );
   res.redirect("/modify");
 });
@@ -169,23 +183,23 @@ app.post("/generatePdf", async (req, res) => {
     products.map(async (product) => {
       try {
         return {
-      ...product,
-      description: await queryItem(product.id, "description"),
-      cost: await queryItem(product.id, "cost"),
-      retail: await queryItem(product.id, "retail"),
-      wholesale: await queryItem(product.id, "wholesale"),
+          ...product,
+          description: await queryItem(product.id, "description"),
+          cost: await queryItem(product.id, "cost"),
+          retail: await queryItem(product.id, "retail"),
+          wholesale: await queryItem(product.id, "wholesale"),
         };
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "could not grab " + product.id });
-  }
-})
+      } catch (err) {
+        console.error(err);
+        return { error: "could not grab " + product.id };
+      }
+    })
   );
   //console.log(products);
   const pdfStream = await createPDF(products, type);
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", `attachment; filename=export.pdf`);
-  pdfStream.pipe(res);  
+  pdfStream.pipe(res);
 });
 
 app.listen(3000, () => {
