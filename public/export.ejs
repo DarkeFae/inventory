@@ -1,0 +1,77 @@
+<form id="addProductsForm">
+    <div id="productFields">
+        <div class="productField">
+            <label for="id">Product Code:</label>
+            <input type="text" class="id" name="id" autocomplete="off">
+        </div>
+    </div><br>
+    <button class="btn btn-primary" type="button" id="costButton">Cost</button>
+    <button class="btn btn-primary" type="button" id="wholesaleButton">Wholesale</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    let products = [];
+
+    function addProductField() {
+        $('#productFields').append(`
+            <div class="productField">
+                <label for="id">Product Code:</label>
+                <input type="text" class="id" name="id" autocomplete="off">
+            </div>
+        `);
+    }
+
+    $(document).on('input', '.id', function() {
+        if ($(this).val() && $(this).closest('.productField').is(':last-child')) {
+            addProductField();
+        }
+    });
+
+    $(document).on('focusout', '.id', function() {
+        if (!$(this).val() && !$(this).closest('.productField').is(':last-child')) {
+            $(this).closest('.productField').remove();
+        }
+    });
+
+    $('#costButton').on('click', function() {
+        generatePdf('Cost');
+    });
+
+    $('#wholesaleButton').on('click', function() {
+        generatePdf('Wholesale');
+    });
+
+    function generatePdf(type) {
+        // Add the products to the list
+        $('.productField').each(function(index, element) {
+            if (index === $('.productField').length - 1 && !$(this).find('.id').val()) {
+            return;
+        }
+            const product = {
+                id: $(this).find('.id').val().toUpperCase()
+            };
+            products.push(product);
+        });
+
+        // Send a request to the server to generate the PDF
+        fetch('/generatePdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ products, type })
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            // Create a link and click it to download the PDF
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            let date = new Date();
+            let currentdate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+            link.download = `Savitech ${currentdate}.pdf`;
+            link.click();
+        });
+        products = [];
+    }
+</script>

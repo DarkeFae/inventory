@@ -1,0 +1,15 @@
+<div>
+    <nav class="navbar navbar-light navbar-expand-md" style="background-color: #e3f2fd; justify-content: space-between; padding:1em;">
+        <% for(let page of navlinks) { %>
+            <%
+            let capitalizedPage = page.charAt(0).toUpperCase() + page.slice(1);
+            let splitPage = capitalizedPage.split(/(?=[A-Z])/).join(" ");
+            %>
+            <% if (currentUrl === '/' + page) { %>
+                <a class="btn btn-primary" role="button" href="/<%= page %>"><%= splitPage %></a>
+            <% } else { %>
+            <a class="btn btn-outline-primary" role="button" href="/<%= page %>"><%= splitPage %></a>
+            <% } %>
+        <% } %>
+    </nav>
+</div>
